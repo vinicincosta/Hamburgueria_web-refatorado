@@ -1,0 +1,32 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de cadastro de insumo — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Cadastrar Insumo</div>
+    <p class="message" style="margin-bottom:24px">Adicione um novo insumo ao estoque</p>
+    <form method="post" action="{{ url_for('cadastrar_insumos') }}">
+      <div class="field-group">
+        <label>Nome do Insumo</label>
+        <input name="nome_insumo" type="text" placeholder="Ex: Carne 150g" required>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Custo (R$)</label>
+          <input name="custo_insumo" type="number" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="field-group">
+          <label>Categoria</label>
+          <select name="categoria_id">
+            {% for c in categorias %}
+            <option value="{{ c['id_categoria'] }}">{{ c['nome_categoria'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-salvar">Cadastrar</button>
+      <a href="{{ url_for('insumos') }}" class="btn-cancelar">← Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

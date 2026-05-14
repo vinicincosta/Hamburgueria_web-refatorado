@@ -1,0 +1,89 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!--
+  vendas_hoje_por_funcionario.html
+  Gráfico de vendas por garçom no dia atual.
+  Lógica de fetch e Chart.js preservada.
+-->
+
+<main class="contanier-geral">
+
+  <div class="page-header">
+    <h2>📊 Vendas <span>por Funcionário Hoje</span></h2>
+    <div class="page-actions">
+      <a href="{{ url_for('pessoas') }}" class="animated-button">← Funcionários</a>
+    </div>
+  </div>
+
+  <!-- Cards dos garçons (referência visual) -->
+  {% set garcons = pessoas | selectattr('papel', 'equalto', 'garcom') | list %}
+  {% if garcons %}
+  <div class="cards-grid" style="margin-bottom:28px">
+    {% for p in garcons %}
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:16px">
+      <div class="avatar">{{ p['nome_pessoa'][:1] }}</div>
+      <div>
+        <div style="font-weight:700; color:var(--text)">{{ p['nome_pessoa'] }}</div>
+        <div style="font-size:11px; color:var(--muted)">Garçom</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Gráfico de barras de desempenho -->
+  <div class="card-grafico" style="max-width:100%">
+    <h2>Desempenho dos Garçons — Hoje</h2>
+    <canvas id="graficoFuncionarios"></canvas>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  /* Carrega dados do endpoint /dados_grafico_funcionarios e renderiza gráfico.
+     Lógica original preservada — apenas organizada e comentada. */
+  async function carregarGraficoFuncionarios() {
+    try {
+      const res = await fetch('/dados_grafico_funcionarios');
+      const dados = await res.json();
+
+      const ctx = document.getElementById('graficoFuncionarios').getContext('2d');
+      if (!ctx) return;
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dados.labels,
+          datasets: [{
+            label: 'Vendas Hoje (R$)',
+            data: dados.totals,
+            backgroundColor: 'rgba(218,165,32,0.75)',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#fff' } }
+          },
+          scales: {
+            x: { ticks: { color: '#8a9bb0' }, grid: { display: false } },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#8a9bb0',
+                callback: v => 'R$ ' + v
+              },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            }
+          }
+        }
+      });
+    } catch (e) { console.error('Erro gráfico funcionários:', e); }
+  }
+
+  carregarGraficoFuncionarios();
+</script>
+
+{% endblock %}

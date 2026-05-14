@@ -1,0 +1,131 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<!--
+  vendas.html
+  Listagem de vendas com cards visuais.
+  Exibe: valor, item, vendedor/tipo (garçom, delivery, balcão),
+  forma de pagamento, status e endereço.
+  Paginação e lógica financeira preservadas integralmente.
+-->
+
+<img id="bg-video" src="{{ url_for('static', filename='hamburguer.jpg') }}" alt="">
+
+<div class="vendas-page">
+
+  <!-- Cabeçalho da página -->
+  <div class="page-header">
+    <h2>💰 Vendas <span>Registradas</span></h2>
+    <div class="page-actions">
+      <!-- Paginação compacta no topo -->
+      {% if has_prev %}
+      <a href="{{ url_for('vendas', page=page-1) }}" class="animated-button">← Anterior</a>
+      {% endif %}
+      <span style="color:var(--muted); font-size:13px">Página {{ page }}</span>
+      {% if has_next %}
+      <a href="{{ url_for('vendas', page=page+1) }}" class="animated-button">Próximo →</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ============================================================
+       GRID DE CARDS DE VENDAS
+       Cada card exibe: valor, item, identificação do vendedor/tipo,
+       forma de pagamento e status.
+       ============================================================ -->
+  <div class="vendas-grid">
+
+    {% for v in vendas %}
+
+    {# Determina a origem da venda para exibição visual #}
+    {% set endereco = v['endereco'] | default('') %}
+    {% set eh_delivery = ('delivery' in endereco | lower or
+                          'entrega' in endereco | lower) and
+                         'presencial' not in endereco | lower %}
+    {% set eh_presencial = 'presencial' in endereco | lower %}
+
+    <div class="venda-card">
+
+      <!-- Linha superior: ID + data -->
+      <div class="venda-head">
+        <span class="venda-id">#{{ v['id_venda'] }}</span>
+        <span class="venda-data">{{ v['data_venda'] }}</span>
+      </div>
+
+      <!-- Valor principal em destaque -->
+      <div class="venda-valor">R$ {{ "%.2f"|format(v['valor_venda']) }}</div>
+
+      <!-- Item vendido (lanche ou bebida) -->
+      <div class="venda-item">
+        {% if v['lanche'] %}
+          🍔 {{ v['lanche'] }}
+        {% elif v['bebida'] %}
+          🥤 {{ v['bebida'] }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+
+      <!-- Identificação do vendedor / tipo de venda -->
+      <div class="venda-vendedor">
+        {% if eh_delivery %}
+          <span class="venda-origem origem-delivery">🚚 Delivery</span>
+          <span style="color:var(--muted); font-size:12px">{{ v['endereco'] }}</span>
+        {% elif eh_presencial %}
+          <!-- Garçom responsável pela venda -->
+          {% if v['pessoa'] %}
+            <span class="venda-origem origem-garcom">👨 Garçom</span>
+            <span>{{ v['pessoa'] }}</span>
+          {% else %}
+            <span class="venda-origem origem-balcao">🛍️ Balcão</span>
+          {% endif %}
+        {% else %}
+          <span class="venda-origem origem-balcao">🛍️ Balcão / Retirada</span>
+          {% if v['pessoa'] %}
+            <span style="color:var(--muted); font-size:12px">{{ v['pessoa'] }}</span>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Rodapé: forma de pagamento + status -->
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;
+                  padding-top:10px; border-top:1px solid var(--border)">
+
+        <span class="venda-pgto">
+          💳 {{ v['forma_pagamento'] | default('—') }}
+        </span>
+
+        {% if v['status_venda'] %}
+          <span class="venda-status">✅ Finalizada</span>
+        {% endif %}
+      </div>
+
+    </div>
+    {% endfor %}
+
+    <!-- Estado vazio -->
+    {% if vendas | length == 0 %}
+    <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--muted)">
+      <div style="font-size:48px; margin-bottom:12px">💰</div>
+      <div style="font-size:16px; font-weight:600">Nenhuma venda encontrada</div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Paginação inferior -->
+  <div class="pagination" style="margin-top:32px">
+    {% if has_prev %}
+    <a href="{{ url_for('vendas', page=page-1) }}" class="animated-button">← Anterior</a>
+    {% endif %}
+
+    <span style="color:var(--muted); font-size:13px; padding:0 8px">Página {{ page }}</span>
+
+    {% if has_next %}
+    <a href="{{ url_for('vendas', page=page+1) }}" class="animated-button">Próximo →</a>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de cadastro de categoria — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Cadastrar Categoria</div>
+    <p class="message" style="margin-bottom:24px">Crie uma nova categoria</p>
+    <form method="post" action="{{ url_for('cadastrar_categorias') }}">
+      <div class="field-group">
+        <label>Nome da Categoria</label>
+        <input name="nome_categoria" type="text" placeholder="Ex: Carnes, Pães, Molhos..." required>
+      </div>
+      <button type="submit" class="btn-salvar">Cadastrar</button>
+      <a href="{{ url_for('categorias') }}" class="btn-cancelar">← Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<img id="bg-video"
+     src="{{ url_for('static', filename='hamburguer_grelhado.jpg') }}"
+     alt="">
+
+<div class="contanier-geral">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <h2>🍳 Pedidos <span>em Tempo Real</span></h2>
+
+        {% if session.get('papel') != 'admin' or not exibir_tabela %}
+
+        <div class="page-actions">
+
+            <form method="get"
+                  action="{{ url_for('pedidos') }}"
+                  class="toggle-form">
+
+                <label class="toggle-label">
+
+                    <input type="checkbox"
+                           name="exibir_concluidos"
+                           onchange="this.form.submit()"
+                           {% if exibir_concluidos in ['True', True] %}checked{% endif %}>
+
+                    <span>Exibir concluídos</span>
+
+                </label>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- ===================== TABELA ===================== -->
+    {% if session.get('papel') == 'admin' and exibir_tabela %}
+
+    <div class="tabela-pedidos-wrapper">
+
+        <table class="tabela-pedidos">
+
+            <thead>
+            <tr>
+                <th>#ID</th>
+                <th>Tipo</th>
+                <th>Mesa</th>
+                <th>Horário</th>
+                <th>Item</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for grupo in vendas %}
+
+            {% set tipo = grupo.tipo_venda %}
+
+            {% for p in grupo.pedidos %}
+
+            <tr>
+
+                <td style="color:var(--dim); font-weight:700">
+                    #{{ p['id_pedido'] }}
+                </td>
+
+                <td>
+                    {% if tipo == 'Delivery' %}
+                    <span class="chip chip-delivery">🚚 Delivery</span>
+                    {% elif tipo == 'Retirada/Balcao' %}
+                    <span class="chip chip-mesa">🛍️ Retirada / Balcão</span>
+                    {% else %}
+                    <span class="chip chip-garcom">🍽️ Presencial</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if grupo.mesa and grupo.mesa != 0 %}
+                    Mesa {{ grupo.mesa }}
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+
+                <td style="color:var(--muted)">
+                    {{ grupo.horario }}
+                </td>
+
+                <td>
+                    {% if p['lanche'] %}
+                    {{ p['lanche'] }}
+                    {% else %}
+                    {{ p['bebida'] }}
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if p['status'] == 2 %}
+                    <span class="status-badge status-ativo">✅ Concluído</span>
+                    {% elif p['status'] == 1 %}
+                    <span class="status-badge" style="background:rgba(249,115,22,.15);color:#fb923c;">
+                                🔥 Em preparo
+                            </span>
+                    {% else %}
+                    <span class="status-badge" style="background:rgba(251,191,36,.12);color:#fcd34d;">
+                                ⏳ Aguardando
+                            </span>
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- ===================== GRID ===================== -->
+    {% else %}
+
+    <div class="pedidos-grid">
+
+        {% for grupo in vendas %}
+
+        {% set tipo = (grupo.tipo_venda or 'Presencial').strip() %}
+
+        <article class="pedido-card">
+
+            <!-- TIPO -->
+            <div class="pedido-vendedor">
+
+                {% if tipo == 'Delivery' %}
+                <span class="chip chip-delivery">🚚 Delivery</span>
+
+                {% elif tipo == 'Retirada/Balcao' %}
+                <span class="chip chip-mesa">🛍️ Retirada / Balcão</span>
+
+                {% else %}
+                <span class="chip chip-garcom">🍽️ Presencial</span>
+                {% endif %}
+
+            </div>
+
+            <!-- HEADER -->
+            <div class="pedido-head">
+
+                <div>
+                    <div class="pedido-mesa">
+                        {% if grupo.mesa not in [None, 0, '0', ''] %}
+                        🪑 Mesa {{ grupo.mesa }}
+
+                        {% endif %}
+                    </div>
+
+                    <div class="pedido-horario">
+                        {{ grupo.horario }}
+                    </div>
+                </div>
+
+                <span class="chip chip-mesa">
+                    {{ grupo.pedidos|length }} itens
+                </span>
+
+            </div>
+
+            <!-- ITENS -->
+            <div class="pedido-items">
+
+                {% for p in grupo.pedidos %}
+
+                <div class="pedido-item">
+
+                    <div class="pedido-item-nome">
+                        Pedido #{{ p['id_pedido'] }}
+                    </div>
+
+                    <div style="font-size:13px;color:var(--muted);">
+                        {{ p['detalhamento'] }}
+                    </div>
+
+                    {% if p['ajustes_receita'] %}
+                    <div style="margin-top:6px; font-size:12px; color:#ffd166; font-size:14px;">
+                        RECEITA:
+                        <ul style="margin:4px 0; padding-left:16px;">
+                            {% for ajuste in p['ajustes_receita'] %}
+                            <li>
+                                {{ ajuste.insumo_nome }} - {{ ajuste.quantidade }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="pedido-foot">
+
+                {% set status_grupo = grupo.pedidos[0]['status'] %}
+
+                {% if status_grupo == 0 %}
+                <a class="status-btn status-pendente"
+                   href="{{ url_for('alterar_status_pedido', id_pedido=grupo.pedidos[0]['id_pedido'], novo_status=1) }}">
+                    Iniciar Preparo</a>
+
+                {% elif status_grupo == 1 %}
+                <a class="status-btn status-preparo"
+                   href="{{ url_for('alterar_status_pedido', id_pedido=grupo.pedidos[0]['id_pedido'], novo_status=2) }}">
+                    Em produção</a>
+
+                {% elif status_grupo == 2 %}
+                <span class="status-btn status-concluido o">Finalizado</span>
+                {% endif %}
+
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

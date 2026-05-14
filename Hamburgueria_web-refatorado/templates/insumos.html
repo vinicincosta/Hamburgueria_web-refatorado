@@ -1,0 +1,65 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<!--
+  insumos.html
+  Listagem de insumos em cards com paginação.
+  Lógica de paginação preservada integralmente.
+-->
+
+<main class="contanier-geral">
+
+  <!-- Cabeçalho com ação de cadastro -->
+  <div class="page-header">
+    <h2>🥩 Insumos <span>em Estoque</span></h2>
+    <div class="page-actions">
+      <a href="{{ url_for('cadastrar_insumos') }}" class="btn-cadastrar">➕ Novo Insumo</a>
+    </div>
+  </div>
+
+  <!-- Grid de cards de insumos -->
+  <div class="insumos-cards">
+    {% for i in insumos %}
+    <div class="insumo-card">
+
+      <div class="insumo-topo">
+        <span class="insumo-id">#{{ i['id_insumo'] }}</span>
+        <a href="{{ url_for('editar_insumo', id_insumo=i['id_insumo']) }}"
+           class="btn-editar">✏️ Editar</a>
+      </div>
+
+      <h3 class="insumo-nome">{{ i['nome_insumo'] }}</h3>
+
+      <div class="card-meta">
+        <div class="insumo-info">
+          📦 Estoque: <strong style="color:var(--text)">{{ i['qtd_insumo'] }}g</strong>
+        </div>
+        <div class="insumo-info">
+          💲 <strong style="color:var(--accent)">R$ {{ i['custo'] }}</strong>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+</main>
+
+<!-- Paginação fixa na parte inferior da tela -->
+<div class="paginacao-fixa">
+  <a class="animated-button {% if not has_prev %}disabled{% endif %}"
+     {% if has_prev %}
+     href="{{ url_for('insumos', page=page-1, exibir_todos=exibir_todos, exibir_tabela=exibir_tabela) }}"
+     {% endif %}>
+    ← Anterior
+  </a>
+
+  <a class="animated-button {% if not has_next %}disabled{% endif %}"
+     {% if has_next %}
+     href="{{ url_for('insumos', page=page+1, exibir_todos=exibir_todos, exibir_tabela=exibir_tabela) }}"
+     {% endif %}>
+    Próximo →
+  </a>
+</div>
+
+{% endblock %}

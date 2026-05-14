@@ -1,0 +1,23 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de edição de categoria — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Editar Categoria</div>
+    <p class="message" style="margin-bottom:24px">Altere o nome da categoria</p>
+
+    <form method="post"
+          action="{{ url_for('editar_categoria', id_categoria=categoria['id_categoria']) }}">
+
+      <div class="field-group">
+        <label>Nome da Categoria</label>
+        <input name="nome_categoria" type="text"
+               value="{{ categoria['nome_categoria'] }}" required>
+      </div>
+
+      <button type="submit" class="btn-salvar">Salvar Alterações</button>
+      <a href="{{ url_for('categorias') }}" class="btn-cancelar">← Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

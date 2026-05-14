@@ -1,0 +1,46 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de edição de lanche — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Editar Lanche</div>
+    <p class="message" style="margin-bottom:24px">Altere os dados do lanche</p>
+
+    <form method="post"
+          action="{{ url_for('editar_lanche', id_lanche=lanche['id_lanche']) }}">
+
+      <div class="field-group">
+        <label>Nome do Lanche</label>
+        <input name="nome_lanche" type="text"
+               value="{{ lanche['nome_lanche'] }}" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Valor (R$)</label>
+          <input name="valor_lanche" type="number" step="0.01"
+                 value="{{ lanche['valor_lanche'] }}" required>
+        </div>
+        <div class="field-group">
+          <label>Disponibilidade</label>
+          <select name="disponivel">
+            <option value="true"
+              {% if lanche['disponivel'] %}selected{% endif %}>Disponível</option>
+            <option value="false"
+              {% if not lanche['disponivel'] %}selected{% endif %}>Indisponível</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Descrição</label>
+        <input name="descricao_lanche" type="text"
+               value="{{ lanche['descricao_lanche'] }}" required>
+      </div>
+
+      <button type="submit" class="btn-salvar">Salvar Alterações</button>
+      <a href="{{ url_for('lanches') }}" class="btn-cancelar">← Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

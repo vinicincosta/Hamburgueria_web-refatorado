@@ -1,0 +1,62 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- save.html — listagem alternativa de pessoas (lógica preservada) -->
+<main class="contanier-geral">
+  <div class="page-header">
+    <h2>👥 Pessoas</h2>
+    <div class="page-actions">
+      <form method="get" action="{{ url_for('pessoas') }}" class="toggle-form">
+        <input type="hidden" name="exibir" value="{{ exibir }}">
+        <input type="hidden" name="form" value="pessoas">
+        <label class="toggle-label">
+          <input type="checkbox" name="tabela" onchange="this.form.submit()"
+                 {% if exibir in ['True', True] %}checked{% endif %}>
+          <span>Modo tabela</span>
+        </label>
+      </form>
+    </div>
+  </div>
+
+  {% if exibir in ['False', False] %}
+  <div class="cards-grid">
+    {% for p in pessoas %}
+    <div class="card {% if p['nome_pessoa'] == session['user_id'] %}
+                     " style="border-color:var(--accent){% endif %}">
+      <span class="card-id">#{{ p['id_pessoa'] }}</span>
+      {% if p['nome_pessoa'] == session['user_id'] %}
+        <span class="status-badge status-ativo" style="margin-left:6px">Você</span>
+      {% endif %}
+      <div class="card-nome" style="margin-top:8px">{{ p['nome_pessoa'] }}</div>
+      <div style="font-size:12px;color:var(--muted)">{{ p['papel'] }}</div>
+      <div style="font-size:12px;color:var(--muted)">{{ p['email'] }}</div>
+      <div style="font-size:13px;color:var(--accent);font-weight:700;margin-top:4px">
+        R$ {{ p['salario'] }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Nome</th><th>Papel</th><th>Email</th><th>Salário</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pessoas %}
+        <tr>
+          <td style="color:var(--dim);font-weight:700">#{{ p['id_pessoa'] }}</td>
+          <td>{{ p['nome_pessoa'] }}</td>
+          <td>{{ p['papel'] }}</td>
+          <td style="color:var(--muted)">{{ p['email'] }}</td>
+          <td style="color:var(--accent);font-weight:700">R$ {{ p['salario'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

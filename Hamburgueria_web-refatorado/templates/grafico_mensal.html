@@ -1,0 +1,70 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Gráfico de vendas mensais por funcionário — lógica JS preservada -->
+<main class="contanier-geral">
+  <div class="page-header">
+    <h2>📊 Vendas <span>por Funcionário — Mensal</span></h2>
+    <div class="page-actions">
+      <input type="month" id="mes"
+             style="background:var(--bg-input);border:1px solid var(--border);
+                    border-radius:var(--r-md);color:var(--text);padding:8px 12px;
+                    font-size:13px;outline:none">
+      <button onclick="carregarGraficoMes()" class="btn-cadastrar">Atualizar</button>
+    </div>
+  </div>
+  <div class="card-grafico" style="max-width:100%">
+    <canvas id="graficoVendasMes" height="140"></canvas>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* Lógica original preservada — lógica JS do grafico_mensal */
+let graficoMes = null;
+Chart.register({
+  id: 'sombra',
+  beforeDraw: c => { c.ctx.save(); c.ctx.shadowColor='rgba(0,0,0,0.3)'; c.ctx.shadowBlur=15; },
+  afterDraw:  c => c.ctx.restore()
+});
+async function carregarGraficoMes() {
+  const mes = document.getElementById('mes').value;
+  let url = '/vendas_valor_por_funcionario_mes';
+  if (mes) url += `?month=${mes}`;
+  const res = await fetch(url);
+  const dados = await res.json();
+  const ctx = document.getElementById('graficoVendasMes').getContext('2d');
+  const azul = ctx.createLinearGradient(0,0,0,300);
+  azul.addColorStop(0,'rgba(54,162,235,0.9)'); azul.addColorStop(1,'rgba(54,162,235,0.3)');
+  const verde = ctx.createLinearGradient(0,0,0,300);
+  verde.addColorStop(0,'rgba(75,192,75,0.9)'); verde.addColorStop(1,'rgba(75,192,75,0.3)');
+  if (graficoMes) graficoMes.destroy();
+  graficoMes = new Chart(ctx, {
+    type:'bar',
+    data: {
+      labels: dados.labels,
+      datasets:[
+        { label:'Quantidade de Vendas', data:dados.counts??[], backgroundColor:azul,
+          borderRadius:10, yAxisID:'y1' },
+        { label:'Total Vendido (R$)', data:dados.totals??[], backgroundColor:verde,
+          borderRadius:10, yAxisID:'y2' }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ labels:{ color:'#fff' } } },
+      scales:{
+        x:{ ticks:{color:'#8a9bb0'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        y1:{ position:'left', ticks:{color:'#8a9bb0'}, grid:{color:'rgba(255,255,255,0.05)'} },
+        y2:{ position:'right', ticks:{color:'#8a9bb0'}, grid:{drawOnChartArea:false} }
+      },
+      animation:{ duration:900, easing:'easeOutQuart' }
+    }
+  });
+}
+window.onload = () => {
+  const d = new Date();
+  document.getElementById('mes').value =
+    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  carregarGraficoMes();
+};
+</script>
+{% endblock %}

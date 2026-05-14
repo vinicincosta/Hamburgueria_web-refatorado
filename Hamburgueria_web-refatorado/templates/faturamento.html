@@ -1,0 +1,52 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Gráfico de faturamento mensal — lógica JS preservada -->
+<main class="contanier-geral">
+  <div class="page-header">
+    <h2>💵 Faturamento <span>Mensal</span></h2>
+  </div>
+  <div class="card-grafico" style="max-width:860px; margin:0 auto">
+    <h2>Faturamento por Mês</h2>
+    <canvas id="graficoFaturamento"></canvas>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+async function carregarFaturamento() {
+  try {
+    const res = await fetch('/faturamento_mensal');
+    const dados = await res.json();
+    const labels = dados.map(i => i.mes);
+    const valores = dados.map(i => i.faturamento);
+    const ctx = document.getElementById('graficoFaturamento').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Faturamento (R$)',
+          data: valores,
+          backgroundColor: 'rgba(218,165,32,0.6)',
+          borderColor: 'rgba(218,165,32,1)',
+          borderWidth: 2,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#8a9bb0' }, grid: { display: false } },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#8a9bb0', callback: v => 'R$ ' + v },
+            grid: { color: 'rgba(255,255,255,0.06)' }
+          }
+        }
+      }
+    });
+  } catch(e) { console.error('Erro faturamento:', e); }
+}
+carregarFaturamento();
+</script>
+{% endblock %}

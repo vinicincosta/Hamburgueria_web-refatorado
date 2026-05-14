@@ -1,0 +1,75 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Gráfico de vendas por funcionário no dia — lógica JS preservada -->
+<main class="contanier-geral">
+  <div class="page-header">
+    <h2>📈 Vendas <span>por Funcionário — Dia</span></h2>
+    <div class="page-actions">
+      <input type="date" id="data-dia"
+             style="background:var(--bg-input);border:1px solid var(--border);
+                    border-radius:var(--r-md);color:var(--text);padding:8px 12px;
+                    font-size:13px;outline:none">
+      <button onclick="carregarGraficoDia()" class="btn-cadastrar">Atualizar</button>
+    </div>
+  </div>
+  <div class="card-grafico" style="max-width:100%">
+    <canvas id="graficoVendasDia" height="150"></canvas>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* Lógica original preservada — plugin de avatar e gráfico diário */
+let graficoDia = null;
+const avatarImgDia = new Image();
+avatarImgDia.src = '/static/img/user.png';
+const pluginAvatarDia = {
+  id:'avatarDia',
+  afterDatasetsDraw(chart) {
+    const ctx = chart.ctx;
+    chart.getDatasetMeta(0).data.forEach((bar, i) => {
+      const x=bar.x, y=bar.y-35, r=17;
+      ctx.save(); ctx.beginPath(); ctx.arc(x,y-10,r,0,Math.PI*2);
+      ctx.closePath(); ctx.clip();
+      ctx.drawImage(avatarImgDia,x-r,y-r-10,r*2,r*2); ctx.restore();
+      ctx.save(); ctx.fillStyle='#fff'; ctx.font='bold 12px Arial';
+      ctx.textAlign='center'; ctx.fillText(chart.data.labels[i],x,y-30); ctx.restore();
+    });
+  }
+};
+Chart.register(pluginAvatarDia);
+async function carregarGraficoDia() {
+  const data = document.getElementById('data-dia')?.value;
+  let url = '/vendas_valor_por_funcionario';
+  if (data) url += `?date=${data}`;
+  const res = await fetch(url);
+  const dados = await res.json();
+  const ctx = document.getElementById('graficoVendasDia').getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,300);
+  grad.addColorStop(0,'rgba(218,165,32,1)'); grad.addColorStop(1,'rgba(218,165,32,0.4)');
+  if (graficoDia) graficoDia.destroy();
+  graficoDia = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:dados.labels, datasets:[{
+      label:'', data:dados.totals??[], backgroundColor:grad,
+      borderRadius:14, borderSkipped:false
+    }]},
+    options:{
+      responsive:true,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label: c=>`R$ ${c.raw.toFixed(2)}` } } },
+      scales:{
+        x:{ ticks:{color:'#8a9bb0'}, grid:{display:false}, border:{display:false} },
+        y:{ beginAtZero:true, ticks:{display:false}, grid:{display:false}, border:{display:false} }
+      },
+      layout:{ padding:{top:50} }
+    }
+  });
+}
+window.onload = () => {
+  const hoje = new Date().toISOString().split('T')[0];
+  if (document.getElementById('data-dia'))
+    document.getElementById('data-dia').value = hoje;
+  carregarGraficoDia();
+};
+</script>
+{% endblock %}

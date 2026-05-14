@@ -1,0 +1,97 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<!--
+  categorias.html
+  Listagem de categorias em cards ou tabela.
+  Toggle de modo de exibição preservado.
+  Botão de deletar e editar preservados.
+-->
+
+<main class="contanier-geral">
+
+  <!-- Cabeçalho com ações -->
+  <div class="page-header">
+    <h2>🏷️ Categorias</h2>
+    <div class="page-actions">
+
+      <a href="{{ url_for('cadastrar_categorias') }}" class="btn-cadastrar">
+        ➕ Nova Categoria
+      </a>
+
+      <!-- Toggle cards / tabela -->
+      <form method="get" action="{{ url_for('categorias') }}" class="toggle-form">
+        <label class="toggle-label">
+          <input type="checkbox" name="exibir_tabela"
+                 onchange="this.form.submit()"
+                 {% if exibir_tabela %}checked{% endif %}>
+          <span>Modo tabela</span>
+        </label>
+      </form>
+
+    </div>
+  </div>
+
+  {% if not exibir_tabela %}
+  <!-- ===== CARDS ===== -->
+  <div class="categorias-cards">
+    {% for c in categorias %}
+    <div class="categoria-card">
+
+      <div class="categoria-topo">
+        <span class="categoria-id">#{{ c['id_categoria'] }}</span>
+        <div style="display:flex; gap:8px; align-items:center">
+          <a href="{{ url_for('editar_categoria', id_categoria=c['id_categoria']) }}"
+             class="btn-editar">✏️ Editar</a>
+
+          <form method="POST"
+                action="{{ url_for('deletar_categoria', id_categoria=c['id_categoria']) }}"
+                style="margin:0">
+            <button type="submit" class="btn-delete">🗑️</button>
+          </form>
+        </div>
+      </div>
+
+      <h3 class="categoria-nome">{{ c['nome_categoria'] }}</h3>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- ===== TABELA ===== -->
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome da Categoria</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in categorias %}
+        <tr>
+          <td style="color:var(--dim); font-weight:700">#{{ c['id_categoria'] }}</td>
+          <td>{{ c['nome_categoria'] }}</td>
+          <td>
+            <div style="display:flex; gap:8px">
+              <a href="{{ url_for('editar_categoria', id_categoria=c['id_categoria']) }}"
+                 class="btn-editar">✏️ Editar</a>
+              <form method="POST"
+                    action="{{ url_for('deletar_categoria', id_categoria=c['id_categoria']) }}"
+                    style="margin:0">
+                <button type="submit" class="btn-delete">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</main>
+
+{% endblock %}

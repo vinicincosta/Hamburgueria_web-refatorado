@@ -1,0 +1,88 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<!--
+  pessoas.html
+  Listagem de funcionários separada por papel: Garçons e Cozinha.
+  Cards com avatar, nome, cargo e status.
+  Botões de ação preservados.
+-->
+
+<main class="contanier-geral">
+
+  <!-- Cabeçalho com ações -->
+  <div class="page-header">
+    <h2>👥 Funcionários</h2>
+    <div class="page-actions">
+      <a href="{{ url_for('cadastrar_pessoas') }}" class="btn-cadastrar">➕ Novo Funcionário</a>
+      <a href="{{ url_for('vendas_hoje_por_funcionario') }}" class="btn-cadastrar"
+         style="background:linear-gradient(135deg,var(--blue),#7b61ff)">
+        📊 Vendas de Hoje
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== GARÇONS ===== -->
+  <section class="funcionarios-section">
+    <h3>🍽️ Garçons</h3>
+    <div class="funcionarios-grid">
+      {% for p in pessoas %}
+      {% if p['papel'] == 'garcom' %}
+      <div class="card-garcom {% if p['status_pessoa'] == 'Inativo' %}inativo{% endif %}">
+
+        <div class="card-header">
+          <!-- Avatar com inicial do nome -->
+          <div class="avatar">{{ p['nome_pessoa'][:1] }}</div>
+          <div class="info">
+            <div class="nome">{{ p['nome_pessoa'] }}</div>
+            <div class="cargo">Garçom</div>
+            <!-- Badge de status -->
+            {% if p['status_pessoa'] == 'Inativo' %}
+              <span class="status-badge status-inativo" style="margin-top:4px">Inativo</span>
+            {% else %}
+              <span class="status-badge status-ativo" style="margin-top:4px">Ativo</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <a href="{{ url_for('editar_pessoa', id_pessoa=p['id_pessoa']) }}"
+           class="btn-editar" style="margin-top:10px">✏️ Editar</a>
+
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ===== COZINHA ===== -->
+  <section class="funcionarios-section">
+    <h3>👨‍🍳 Cozinha</h3>
+    <div class="funcionarios-grid">
+      {% for p in pessoas %}
+      {% if p['papel'] == 'cozinha' %}
+      <div class="card-cozinha {% if p['status_pessoa'] == 'inativo' %}inativo{% endif %}">
+
+        <div class="card-header">
+          <div class="avatar cozinha-avatar">{{ p['nome_pessoa'][:1] }}</div>
+          <div class="info">
+            <div class="nome">{{ p['nome_pessoa'] }}</div>
+            <div class="cargo">Cozinha</div>
+            {% if p['status_pessoa'] == 'inativo' %}
+              <span class="status-badge status-inativo" style="margin-top:4px">Inativo</span>
+            {% else %}
+              <span class="status-badge status-ativo" style="margin-top:4px">Ativo</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('editar_pessoa', id_pessoa=p['id_pessoa']) }}"
+             class="btn-editar">✏️ Editar</a>
+        </div>
+
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+
+{% endblock %}

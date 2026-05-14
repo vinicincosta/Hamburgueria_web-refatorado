@@ -1,0 +1,48 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de cadastro de funcionário — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Cadastrar Funcionário</div>
+    <p class="message" style="margin-bottom:24px">Preencha os dados do novo funcionário</p>
+
+    <form method="post" action="{{ url_for('cadastrar_pessoas') }}">
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Nome</label>
+          <input name="Nome" type="text" placeholder="Nome completo" required>
+        </div>
+        <div class="field-group">
+          <label>CPF</label>
+          <input name="CPF" type="text" placeholder="000.000.000-00" required>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>E-mail</label>
+        <input name="Email" type="email" placeholder="email@exemplo.com" required>
+      </div>
+
+      <div class="field-group">
+        <label>Senha</label>
+        <input name="Senha" type="password" placeholder="••••••••" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Cargo</label>
+          <input name="Cargo" type="text" placeholder="garcom / cozinha / admin" required>
+        </div>
+        <div class="field-group">
+          <label>Salário (R$)</label>
+          <input name="Salario" type="number" step="0.01" placeholder="0.00" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-salvar">Cadastrar</button>
+      <a href="{{ url_for('pessoas') }}" class="btn-cancelar">← Voltar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

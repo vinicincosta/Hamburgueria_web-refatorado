@@ -1,0 +1,36 @@
+{% extends 'inicio.html' %}
+{% block content %}
+<!-- Formulário de edição de insumo — campos e action preservados -->
+<div class="form-page">
+  <div class="form-card">
+    <div class="form-title">Editar Insumo</div>
+    <p class="message" style="margin-bottom:24px">Altere os dados do insumo</p>
+
+    <form method="post"
+          action="{{ url_for('editar_insumo', id_insumo=insumo['id_insumo']) }}">
+
+      <div class="field-group">
+        <label>Nome do Insumo</label>
+        <input name="nome_insumo" type="text"
+               value="{{ insumo['nome_insumo'] }}" required>
+      </div>
+
+      <div class="field-group">
+        <label>Categoria</label>
+        <select name="categoria_id" required>
+          <option value="">Selecione a categoria</option>
+          {% for c in categorias %}
+          <option value="{{ c['id_categoria'] }}"
+            {% if c['id_categoria'] == insumo['categoria_id'] %}selected{% endif %}>
+            {{ c['nome_categoria'] }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn-salvar">Salvar Alterações</button>
+      <a href="{{ url_for('insumos') }}" class="btn-cancelar">← Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

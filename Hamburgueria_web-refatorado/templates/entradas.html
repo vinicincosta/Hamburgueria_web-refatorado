@@ -1,0 +1,70 @@
+{% extends 'inicio.html' %}
+{% block content %}
+
+<!--
+  entradas.html
+  Listagem de entradas de estoque em cards ou tabela.
+  Lógica de exibição via valor_ preservada.
+-->
+
+<main class="contanier-geral">
+
+  <div class="page-header">
+    <h2>📦 Entradas <span>de Estoque</span></h2>
+    <div class="page-actions">
+      <a href="{{ url_for('cadastrar_entradas') }}" class="btn-cadastrar">➕ Nova Entrada</a>
+    </div>
+  </div>
+
+  {% if not valor_ %}
+  <!-- ===== CARDS ===== -->
+  <div class="cards-scroll">
+    <div class="cards-grid">
+      {% for e in entradas %}
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;
+                    margin-bottom:10px">
+          <span class="card-id">#{{ e['id_entrada'] }}</span>
+          <span style="font-size:11px; color:var(--muted)">{{ e['data_entrada'] }}</span>
+        </div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom:8px">
+          Insumo ID: <strong style="color:var(--text)">{{ e['insumo_id'] }}</strong>
+        </div>
+        <div class="card-meta">
+          <span class="info-chip">Qtd: <strong style="margin-left:4px">{{ e['qtd_entrada'] }}</strong></span>
+          <span style="font-weight:700; color:var(--accent)">R$ {{ e['valor_entrada'] }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% else %}
+  <!-- ===== TABELA ===== -->
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Data</th>
+          <th>Quantidade</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entradas %}
+        <tr>
+          <td style="color:var(--dim); font-weight:700">#{{ e['id_entrada'] }}</td>
+          <td style="color:var(--muted)">{{ e['data_entrada'] }}</td>
+          <td><strong>{{ e['qtd_entrada'] }}</strong></td>
+          <td style="color:var(--accent); font-weight:700">R$ {{ e['valor_entrada'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</main>
+
+{% endblock %}
