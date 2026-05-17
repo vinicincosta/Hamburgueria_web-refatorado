@@ -95,6 +95,10 @@
           💳 {{ v['forma_pagamento'] | default('—') }}
         </span>
 
+          <span class="venda-status">
+          💳 {{ v['id_venda'] | default('—') }}
+        </span>
+
         {% if v['status_venda'] %}
           <span class="venda-status">✅ Finalizada</span>
         {% endif %}

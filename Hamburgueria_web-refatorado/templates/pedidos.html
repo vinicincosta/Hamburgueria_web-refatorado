@@ -20,114 +20,12 @@
                   action="{{ url_for('pedidos') }}"
                   class="toggle-form">
 
-                <label class="toggle-label">
-
-                    <input type="checkbox"
-                           name="exibir_concluidos"
-                           onchange="this.form.submit()"
-                           {% if exibir_concluidos in ['True', True] %}checked{% endif %}>
-
-                    <span>Exibir concluídos</span>
-
-                </label>
-
             </form>
 
         </div>
 
-        {% endif %}
 
     </div>
-
-    <!-- ===================== TABELA ===================== -->
-    {% if session.get('papel') == 'admin' and exibir_tabela %}
-
-    <div class="tabela-pedidos-wrapper">
-
-        <table class="tabela-pedidos">
-
-            <thead>
-            <tr>
-                <th>#ID</th>
-                <th>Tipo</th>
-                <th>Mesa</th>
-                <th>Horário</th>
-                <th>Item</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-
-            <tbody>
-
-            {% for grupo in vendas %}
-
-            {% set tipo = grupo.tipo_venda %}
-
-            {% for p in grupo.pedidos %}
-
-            <tr>
-
-                <td style="color:var(--dim); font-weight:700">
-                    #{{ p['id_pedido'] }}
-                </td>
-
-                <td>
-                    {% if tipo == 'Delivery' %}
-                    <span class="chip chip-delivery">🚚 Delivery</span>
-                    {% elif tipo == 'Retirada/Balcao' %}
-                    <span class="chip chip-mesa">🛍️ Retirada / Balcão</span>
-                    {% else %}
-                    <span class="chip chip-garcom">🍽️ Presencial</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if grupo.mesa and grupo.mesa != 0 %}
-                    Mesa {{ grupo.mesa }}
-                    {% else %}
-                    —
-                    {% endif %}
-                </td>
-
-                <td style="color:var(--muted)">
-                    {{ grupo.horario }}
-                </td>
-
-                <td>
-                    {% if p['lanche'] %}
-                    {{ p['lanche'] }}
-                    {% else %}
-                    {{ p['bebida'] }}
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if p['status'] == 2 %}
-                    <span class="status-badge status-ativo">✅ Concluído</span>
-                    {% elif p['status'] == 1 %}
-                    <span class="status-badge" style="background:rgba(249,115,22,.15);color:#fb923c;">
-                                🔥 Em preparo
-                            </span>
-                    {% else %}
-                    <span class="status-badge" style="background:rgba(251,191,36,.12);color:#fcd34d;">
-                                ⏳ Aguardando
-                            </span>
-                    {% endif %}
-                </td>
-
-            </tr>
-
-            {% endfor %}
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    <!-- ===================== GRID ===================== -->
-    {% else %}
 
     <div class="pedidos-grid">
 
@@ -183,9 +81,13 @@
 
                     <div class="pedido-item-nome">
                         Pedido #{{ p['id_pedido'] }}
+
+
                     </div>
 
-                    <div style="font-size:13px;color:var(--muted);">
+
+                    <!--                    Aqui exibe o que vem no pedido-->
+                    <div class="pedido-detalhamento">
                         {{ p['detalhamento'] }}
                     </div>
 

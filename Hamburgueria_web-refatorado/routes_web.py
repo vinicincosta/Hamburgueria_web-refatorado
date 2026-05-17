@@ -4,7 +4,7 @@ from logging import exception
 import requests
 import os
 
-url = "http://10.20.21.170:5000"
+url = ("http://192.168.0.71:5000")
 
 
 def atualizar_status_pedido(token, id_pedido, novo_status):

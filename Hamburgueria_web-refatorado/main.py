@@ -150,30 +150,31 @@ def lanches():
     retorno = verificar_token()
     if retorno:
         return retorno
+
     var_lanches = routes_web.get_lanches(session['token'])
 
     if 'lanches' not in var_lanches:
         flash('Parece que algo ocorreu errado :/', 'error')
-
         return redirect(url_for(session['funcao_rota_anterior']))
-    # return jsonify({'lanches': var_lanches['lanches']})
-    form_id = request.args.get('form_id', None)
-    valor_ = request.args.get('valor_', False)
-    exibir = request.args.get('exibir', False)
-    session['funcao_rota_anterior'] = 'lanches'
-    if form_id is not None:
-        if form_id == 'exibir':
-            if not exibir or exibir in ['False', 'false']:
-                exibir = True
-            else:
-                exibir = False
-        elif form_id == 'valor':
-            if not valor_ or valor_ in ['false', 'False']:
-                valor_ = True
-            else:
-                valor_ = False
 
-    return render_template('lanches.html', lanches=var_lanches['lanches'], valor_=valor_, exibir=exibir)
+    # =========================
+    # TOGGLES NOVOS (CORRETO)
+    # =========================
+    modo_tabela = request.args.get('modo_tabela')
+    mostrar_indisponiveis = request.args.get('mostrar_indisponiveis')
+
+    session['funcao_rota_anterior'] = 'lanches'
+
+    # normaliza valores (string → bool simples)
+    modo_tabela = True if modo_tabela in ['True', 'true', True] else False
+    mostrar_indisponiveis = True if mostrar_indisponiveis in ['True', 'true', True] else False
+
+    return render_template(
+        'lanches.html',
+        lanches=var_lanches['lanches'],
+        modo_tabela=modo_tabela,
+        mostrar_indisponiveis=mostrar_indisponiveis
+    )
 
 
 @app.route('/insumos', methods=['GET'])
@@ -278,18 +279,53 @@ def pedidos():
 
     var_pedidos = routes_web.get_pedidos(session['token'])
 
-    # ✅ agora verifica "vendas"
     if 'vendas' not in var_pedidos:
         flash('Erro ao buscar pedidos', 'error')
         return redirect(url_for(session['funcao_rota_anterior']))
 
     vendas = var_pedidos['vendas']
 
+    # ==============================
+    # 🔥 FILTRO: SOMENTE HOJE
+    # ==============================
+    hoje = date.today()
+    vendas_filtradas = []
+
+    for grupo in vendas:
+
+        pedidos_filtrados = []
+
+        for p in grupo['pedidos']:
+
+            try:
+                # aceita "YYYY-MM-DD HH:MM:SS"
+                data_pedido = datetime.strptime(
+                    p['data_pedido'],
+                    "%Y-%m-%d %H:%M:%S"
+                ).date()
+
+                if data_pedido == hoje:
+                    pedidos_filtrados.append(p)
+
+            except:
+                # se não tiver data válida, ignora
+                continue
+
+        if pedidos_filtrados:
+            grupo_copy = dict(grupo)
+            grupo_copy['pedidos'] = pedidos_filtrados
+            vendas_filtradas.append(grupo_copy)
+
+
+
     return render_template(
         'pedidos.html',
-        vendas=vendas,
-        data_de_hoje=date.today()
+        vendas=vendas_filtradas,
+
+        data_de_hoje=hoje
     )
+
+
 @app.route('/bebidas', methods=['GET', 'POST'])
 def bebidas():
     retorno = verificar_token()

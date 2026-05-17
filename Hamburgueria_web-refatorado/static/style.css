@@ -22,53 +22,76 @@
    1. VARIÁVEIS E RESET
    ============================================================ */
 :root {
-  --bg:          #0d1117;
-  --bg-sec:      #161e25;
-  --bg-card:     #1a2230;
-  --bg-glass:    rgba(255,255,255,0.04);
-  --bg-input:    rgba(255,255,255,0.06);
+  /* ===== BASE ===== */
+  --bg:        #0b1220;   /* mais profundo e moderno */
+  --bg-sec:    #111a2e;   /* azul escuro leve */
+  --bg-card:   #162033;   /* cards mais definidos */
+  --bg-glass:  rgba(255,255,255,0.05);
+  --bg-input:  rgba(255,255,255,0.07);
 
-  --accent:      #DAA520;
-  --accent-dk:   #b8860b;
-  --accent-lt:   #f1c94a;
-  --blue:        #3b82f6;
-  --red:         #ef4444;
-  --green:       #22c55e;
+  /* ===== ACCENT (ouro mais realista) ===== */
+  --accent:    #f5c542;   /* ouro vibrante */
+  --accent-dk: #c99a1a;
+  --accent-lt: #ffe08a;
 
-  --text:        #f0f4f8;
-  --muted:       #8a9bb0;
-  --dim:         #4a5568;
+  /* ===== CORES FUNCIONAIS ===== */
+  --blue:      #4f8cff;   /* mais vivo */
+  --red:       #ff4d4d;   /* menos “apagado” */
+  --green:     #2ee59d;   /* verde mais moderno */
 
-  --border:      rgba(255,255,255,0.08);
-  --border-ac:   rgba(218,165,32,0.35);
+  /* ===== TEXTO ===== */
+  --text:      #eaf1ff;   /* branco levemente azulado (menos agressivo) */
+  --muted:     #9fb0c8;   /* melhor legibilidade */
+  --dim:       #5e6c84;
 
+  /* ===== BORDAS ===== */
+  --border:    rgba(255,255,255,0.08);
+  --border-ac: rgba(245,197,66,0.35);
+
+  /* ===== SHADOWS (mais profundidade real) ===== */
+  --sh-sm: 0 2px 10px rgba(0,0,0,.35);
+  --sh-md: 0 8px 25px rgba(0,0,0,.45);
+  --sh-lg: 0 18px 50px rgba(0,0,0,.6);
+  --sh-ac: 0 10px 30px rgba(245,197,66,.22);
+
+  /* ===== UX ===== */
   --r-sm: 6px;
   --r-md: 12px;
   --r-lg: 18px;
   --r-xl: 24px;
 
-  --sh-sm: 0 2px 8px rgba(0,0,0,.4);
-  --sh-md: 0 6px 20px rgba(0,0,0,.5);
-  --sh-lg: 0 12px 40px rgba(0,0,0,.6);
-  --sh-ac: 0 8px 24px rgba(218,165,32,.25);
-
   --t: .22s ease;
   --header-h: 70px;
 }
 
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html { scroll-behavior:smooth; }
-
-body {
-  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  -webkit-font-smoothing:antialiased;
+/* ===== BASE ===== */
+*,*::before,*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-a { text-decoration:none; color:inherit; }
-img { max-width:100%; }
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at top, #111a2e 0%, var(--bg) 60%);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
 
 
 /* ============================================================
@@ -880,8 +903,18 @@ main,
 }
 
 /* Select */
-.form-group select { appearance:none; cursor:pointer; }
-.form-group select option { background:var(--bg-sec); color:var(--text); }
+.form-group select {
+    appearance: none;
+    cursor: pointer;
+    background: var(--bg-sec);
+    color: var(--text);
+    border: 1px solid #444;
+}
+
+.form-group select option {
+    background: #1f1f1f;
+    color: #ffffff;
+}
 
 /* Botão submit */
 .btn-salvar,.submit {
@@ -1156,6 +1189,7 @@ main,
   transition:transform var(--t),box-shadow var(--t),border-color var(--t);
 }
 
+
 .pedido-card:hover {
   transform:translateY(-4px);
   box-shadow:var(--sh-md);
@@ -1195,7 +1229,17 @@ main,
 }
 
 .pedido-item:last-child { border-bottom:none; }
-.pedido-item-nome { font-weight:600; color:#fff; margin-bottom:3px; }
+.pedido-item-nome { font-weight:600; color:#fff; margin-bottom:3px; font-size: 20px;}
+
+
+.pedido-detalhamento {
+    font-size: 16px;
+    font-weight: 500;
+    color: #d1d5db;
+    line-height: 1.4;
+}
+
+
 
 /* Ajustes/receita do pedido */
 .pedido-ajustes {
@@ -1482,3 +1526,40 @@ main,
 .rota_inicial { text-decoration:none; color:goldenrod; }
 .entradas-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .entradas-header h2 { font-size:22px; color:#fff; }
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+
+    background: #162033;   /* fundo escuro consistente */
+    color: #eaf1ff;        /* texto claro e legível */
+
+    font-size: 15px;
+    font-weight: 500;
+
+    outline: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* hover para dar vida */
+select:hover {
+    border-color: rgba(245, 197, 66, 0.5);
+}
+
+/* foco (quando clica) */
+select:focus {
+    border-color: #f5c542;
+    box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.15);
+}
+
+/* opções dentro do dropdown */
+select option {
+    background: #111a2e;
+    color: #ffffff;
+    font-size: 14px;
+}
+/* LANCHE */
+

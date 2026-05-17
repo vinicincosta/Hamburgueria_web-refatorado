@@ -8,114 +8,115 @@
 
 <main class="contanier-geral">
 
-  <div class="page-header">
-    <h2>📋 Receitas <span>Lanche × Insumo</span></h2>
-    <div class="page-actions">
+    <div class="page-header">
+        <h2> Receitas <span>Lanche × Insumo</span></h2>
+        <div class="page-actions">
 
-      <a href="{{ url_for('cadastrar_lanche_insumos') }}" class="btn-cadastrar">
-        ➕ Cadastrar Receita
-      </a>
+            <a href="{{ url_for('cadastrar_lanche_insumos') }}" class="btn-cadastrar">
+                ➕ Cadastrar Receita
+            </a>
 
-      <!-- Toggle cards / tabela -->
-      <form method="get" action="{{ url_for('lanche_insumos') }}" class="toggle-form">
-        <input type="hidden" name="form" value="exibir_tabela">
-        <input type="hidden" name="page" value="1">
-        <label class="toggle-label">
-          <input type="checkbox" name="tabela" onchange="this.form.submit()"
-                 {% if exibir_tabela in ['True', True] %}checked{% endif %}>
-          <span>Modo tabela</span>
-        </label>
-      </form>
+            <!-- Toggle cards / tabela -->
+            <form method="get" action="{{ url_for('lanche_insumos') }}" class="toggle-form">
+                <input type="hidden" name="form" value="exibir_tabela">
+                <input type="hidden" name="page" value="1">
+                <label class="toggle-label">
+                    <input type="checkbox" name="tabela" onchange="this.form.submit()"
+                           {% if exibir_tabela in ['True', True] %}checked{% endif %}>
+                    <span>Modo tabela</span>
+                </label>
+            </form>
 
-    </div>
-  </div>
-
-  {% if exibir_tabela in ['False', False] %}
-  <!-- ===== CARDS ===== -->
-  <div class="cards-grid">
-    {% for i in lanche_insumos %}
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start">
-        <div>
-          <div style="font-size:14px; font-weight:700; color:var(--accent)">
-            {{ i['lanche_nome'] }}
-          </div>
-          <div style="font-size:13px; color:var(--muted); margin-top:2px">
-            {{ i['insumo_nome'] }}
-          </div>
         </div>
-        <span style="font-size:13px; font-weight:700; color:var(--text)">
+    </div>
+
+    {% if exibir_tabela in ['False', False] %}
+    <!-- ===== CARDS ===== -->
+    <div class="cards-grid">
+        {% for i in lanche_insumos %}
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                <div>
+                    <div style="font-size:13px; color:#d6d6d6; margin-top:2px">
+                        {{ i['lanche_nome'] }}
+                    </div>
+
+                    <div style="font-size:13px; color:#d6d6d6; margin-top:2px">
+                        {{ i['insumo_nome'] }}
+                    </div>
+                </div>
+                <span style="font-size:13px; font-weight:700; color:var(--text)">
           {{ i['qtd_insumo'] }}g
         </span>
-      </div>
+            </div>
 
-      <form method="POST"
-            action="{{ url_for('deletar_lanche_insumo',
-                        lanche_id=i['lanche_id'], insumo_id=i['insumo_id']) }}"
-            style="margin-top:8px">
-        <button type="submit" class="btn-delete" style="width:100%">🗑️ Remover</button>
-      </form>
-    </div>
-    {% endfor %}
-  </div>
-
-  {% else %}
-  <!-- ===== TABELA ===== -->
-  <div class="table-wrapper">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Insumo</th>
-          <th>Lanche</th>
-          <th>Qtd (g)</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in lanche_insumos %}
-        <tr>
-          <td style="color:var(--dim); font-weight:700">{{ i['id_lanche_insumo'] }}</td>
-          <td>{{ i['insumo_nome'] }}</td>
-          <td style="color:var(--accent)">{{ i['lanche_nome'] }}</td>
-          <td><strong>{{ i['qtd_insumo'] }}</strong></td>
-          <td>
             <form method="POST"
                   action="{{ url_for('deletar_lanche_insumo',
-                              lanche_id=i['lanche_id'], insumo_id=i['insumo_id']) }}"
-                  style="margin:0">
-              <button type="submit" class="btn-delete">🗑️</button>
+                        lanche_id=i['lanche_id'], insumo_id=i['insumo_id']) }}"
+                  style="margin-top:8px">
+                <button type="submit" class="btn-delete" style="width:100%">🗑️ Remover</button>
             </form>
-          </td>
-        </tr>
+        </div>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% endif %}
+    </div>
 
-  <!-- Paginação -->
-  {% if total_pages > 1 %}
-  <div class="pagination" style="margin-top:24px">
-    {% if page > 1 %}
-    <a href="{{ url_for('lanche_insumos', page=page-1, exibir_tabela=exibir_tabela) }}"
-       class="animated-button">← Anterior</a>
+    {% else %}
+    <!-- ===== TABELA ===== -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Insumo</th>
+                <th>Lanche</th>
+                <th>Qtd (g)</th>
+                <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in lanche_insumos %}
+            <tr>
+                <td style="color:var(--dim); font-weight:700">{{ i['id_lanche_insumo'] }}</td>
+                <td>{{ i['insumo_nome'] }}</td>
+                <td style="color:var(--accent)">{{ i['lanche_nome'] }}</td>
+                <td><strong>{{ i['qtd_insumo'] }}</strong></td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('deletar_lanche_insumo',
+                              lanche_id=i['lanche_id'], insumo_id=i['insumo_id']) }}"
+                          style="margin:0">
+                        <button type="submit" class="btn-delete">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% endif %}
 
-    {% for p in range(1, total_pages + 1) %}
-    <a href="{{ url_for('lanche_insumos', page=p, exibir_tabela=exibir_tabela) }}"
-       class="animated-button {% if p == page %}active{% endif %}"
-       style="{% if p == page %}background:var(--accent);color:#111;{% endif %}">
-      {{ p }}
-    </a>
-    {% endfor %}
+    <!-- Paginação -->
+    {% if total_pages > 1 %}
+    <div class="pagination" style="margin-top:24px">
+        {% if page > 1 %}
+        <a href="{{ url_for('lanche_insumos', page=page-1, exibir_tabela=exibir_tabela) }}"
+           class="animated-button">← Anterior</a>
+        {% endif %}
 
-    {% if page < total_pages %}
-    <a href="{{ url_for('lanche_insumos', page=page+1, exibir_tabela=exibir_tabela) }}"
-       class="animated-button">Próximo →</a>
+        {% for p in range(1, total_pages + 1) %}
+        <a href="{{ url_for('lanche_insumos', page=p, exibir_tabela=exibir_tabela) }}"
+           class="animated-button {% if p == page %}active{% endif %}"
+           style="{% if p == page %}background:var(--accent);color:#111;{% endif %}">
+            {{ p }}
+        </a>
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('lanche_insumos', page=page+1, exibir_tabela=exibir_tabela) }}"
+           class="animated-button">Próximo →</a>
+        {% endif %}
+    </div>
     {% endif %}
-  </div>
-  {% endif %}
 
 </main>
 

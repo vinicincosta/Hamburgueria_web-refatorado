@@ -1,66 +1,64 @@
 {% extends 'inicio.html' %}
 {% block content %}
 
-<!--
-  lanches.html
-  Cardápio de lanches em cards ou tabela.
-  Toggles de modo de exibição e exibir indisponíveis preservados.
-  Lógica de disponibilidade preservada.
--->
-
 <main class="contanier-geral">
 
-    <!-- Cabeçalho com ações -->
+    <!-- HEADER -->
     <div class="page-header">
-        <h2>🍔 Cardápio <span>Royal Burger</span></h2>
+        <h2> Cardápio <span>Royal Burger</span></h2>
+
         <div class="page-actions">
 
-            <a href="{{ url_for('cadastrar_lanches') }}" class="btn-cadastrar">➕ Novo Lanche</a>
+            <a href="{{ url_for('cadastrar_lanches') }}" class="btn-cadastrar">
+                ➕ Novo Lanche
+            </a>
 
-            <!-- Toggle: modo tabela -->
+            <!-- TOGGLE: MODO TABELA -->
             <form method="get" action="{{ url_for('lanches') }}" class="toggle-form">
-                <input type="hidden" name="form_id" value="valor">
-                <input type="hidden" name="exibir" value="{{ exibir }}">
+
                 <label class="toggle-label">
                     <input type="checkbox"
-                           name="valor_"
+                           name="modo_tabela"
                            value="True"
                            onchange="this.form.submit()"
-                           {% if valor_ in ['True', True] %}checked{% endif %}>
+                           {% if modo_tabela in ['True', True] %}checked{% endif %}>
                     <span>Modo tabela</span>
                 </label>
+
             </form>
 
-            <!-- Toggle: exibir indisponíveis -->
+            <!-- TOGGLE: INDISPONÍVEIS -->
             <form method="get" action="{{ url_for('lanches') }}" class="toggle-form">
-                <input type="hidden" name="form_id" value="exibir">
-                <input type="hidden" name="valor_" value="{{ valor_ }}">
+
                 <label class="toggle-label">
                     <input type="checkbox"
-                           name="exibir"
+                           name="mostrar_indisponiveis"
                            value="True"
                            onchange="this.form.submit()"
-                           {% if exibir in ['True', True] %}checked{% endif %}>
+                           {% if mostrar_indisponiveis in ['True', True] %}checked{% endif %}>
                     <span>Exibir indisponíveis</span>
                 </label>
+
             </form>
 
         </div>
     </div>
 
-    <!-- ===== CARDS ===== -->
-    {% if not valor_ or valor_ == 'False' %}
+    <!-- ================= CARDS ================= -->
+    {% if not modo_tabela or modo_tabela == 'False' %}
+
     <div class="cards-area" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
+
         {% for l in lanches %}
         {% set ativo = (l['disponivel'] in ['True', True]) %}
 
         <div class="card-lanche
-      {% if not ativo %}card-desativado{% endif %}
-      {% if not ativo and exibir not in ['True', True] %}card-oculto{% endif %}">
+            {% if not ativo %}card-desativado{% endif %}
+            {% if not ativo and not mostrar_indisponiveis %}card-oculto{% endif %}">
 
-            <div style="display:flex; justify-content:space-between; align-items:center;
-                  margin-bottom:10px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
                 <span class="card-id">#{{ l['id_lanche'] }}</span>
+
                 <a href="{{ url_for('editar_lanche', id_lanche=l['id_lanche']) }}"
                    class="btn-editar">✏️ Editar</a>
             </div>
@@ -71,49 +69,59 @@
             <div class="card-desc">{{ l['descricao_lanche'] }}</div>
             {% endif %}
 
-            <div class="card-preco">R$ {{ "%.2f"|format(l['valor_lanche']) }}</div>
+            <div class="card-preco">
+                R$ {{ "%.2f"|format(l['valor_lanche']) }}
+            </div>
 
             {% if not ativo %}
-            <span class="status-badge status-inativo" style="margin-top:10px">Indisponível</span>
+            <span class="status-badge status-inativo" style="margin-top:10px">
+                Indisponível
+            </span>
             {% endif %}
 
         </div>
+
         {% endfor %}
+
     </div>
 
-    {% else %}
-    <!-- ===== TABELA ===== -->
     <!-- ================= TABELA ================= -->
-    <table class="menu-table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>NOME</th>
-            <th>VALOR</th>
-        </tr>
-        </thead>
-        <tbody>
+    {% else %}
 
-        {% for l in lanches %}
-        {% set ativo = (l['disponivel'] in ['True', True]) %}
+    <div class="table-wrapper">
+        <table class="data-table">
 
-        <tr class="
-            {% if not ativo %}linha-desativada{% endif %}
-            {% if not ativo and exibir not in ['True', True] %}linha-oculta{% endif %}">
-            <td>#{{ l['id_lanche'] }}</td>
-            <td>{{ l['nome_lanche'] }}</td>
-            <td>R$ {{ "%.2f"|format(l['valor_lanche']) }}</td>
-        </tr>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Lanche</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
 
-        {% endfor %}
+            <tbody>
 
-        </tbody>
-    </table>
+            {% for l in lanches %}
+            {% set ativo = (l['disponivel'] in ['True', True]) %}
+
+            <tr class="
+                {% if not ativo %}linha-desativada{% endif %}
+                {% if not ativo and not mostrar_indisponiveis %}linha-oculta{% endif %}
+            ">
+                <td>#{{ l['id_lanche'] }}</td>
+                <td>{{ l['nome_lanche'] }}</td>
+                <td>R$ {{ "%.2f"|format(l['valor_lanche']) }}</td>
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
 
     {% endif %}
 
 </main>
+
 {% endblock %}
-
-
-
